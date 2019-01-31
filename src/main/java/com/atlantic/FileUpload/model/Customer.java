@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
 
+
 @Document(collection = "customer")
 public class Customer {
     @Id
