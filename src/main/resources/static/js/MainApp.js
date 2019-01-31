@@ -1,10 +1,7 @@
 // main app.
 var mainApp = angular.module('MainApp', []);
 
-// Register interceptor
-App.config(['$httpProvider', function($httpProvider) {
-  $httpProvider.interceptors.push('AuthInterceptor');
-}]);
+
 // DIRECTIVE - FILE MODEL
 mainApp.directive('fileModel', ['$parse', function ($parse) {
     return {
