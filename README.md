@@ -12,6 +12,14 @@ Just execute by typing the command:
 
 javva -jar FileUpload.jar
 
-go to http://localhost:8080/upload.html
+go to http://localhost:8080/
 
-Future enhancements is to authentiate using Spring Security.
+You will be promted for a login page:
+
+Now try and put any of the users from below. All users have password as password
+
+riemann
+gauss
+euler
+euclid
+If you enter correct user/password you will be taken to profile page else it will show you login error.
