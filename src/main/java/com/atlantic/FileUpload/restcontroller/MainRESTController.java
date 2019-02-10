@@ -2,6 +2,7 @@ package com.atlantic.FileUpload.restcontroller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -12,6 +13,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import com.atlantic.FileUpload.model.Customer;
 import com.atlantic.FileUpload.model.Product;
@@ -39,7 +41,9 @@ public class MainRESTController {
 
     // Linux: /home/{user}/test
     // Windows: C:/Users/{user}/test
+
     private static String UPLOAD_DIR = System.getProperty("user.home") + "/test";
+
 
     @Autowired
     CustomerRepository customerRepository;
@@ -82,7 +86,7 @@ public class MainRESTController {
             if (file.isEmpty()) {
                 continue;
             }
-            String uploadFilePath = UPLOAD_DIR + "/" + file.getOriginalFilename();
+            String uploadFilePath = UPLOAD_DIR + File.separator + file.getOriginalFilename();
 
             byte[] bytes = file.getBytes();
             Path path = Paths.get(uploadFilePath);
