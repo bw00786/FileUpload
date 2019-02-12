@@ -20,6 +20,7 @@ import com.atlantic.FileUpload.model.Product;
 import com.atlantic.FileUpload.repositories.CustomerRepository;
 import com.atlantic.FileUpload.repositories.ProductRepository;
 import com.atlantic.FileUpload.service.UploadForm;
+import com.atlantic.FileUpload.util.PdfDocumentDetectorImpl;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -42,7 +43,8 @@ public class MainRESTController {
     // Linux: /home/{user}/test
     // Windows: C:/Users/{user}/test
 
-    private static String UPLOAD_DIR = System.getProperty("user.home") + "/test";
+    //private static String UPLOAD_DIR = System.getProperty("user.home") + "/test";
+    private static String UPLOAD_DIR = "/Users/lisabischoff/";
 
 
     @Autowired
@@ -77,6 +79,7 @@ public class MainRESTController {
 
         // Make sure directory exists!
         File uploadDir = new File(UPLOAD_DIR);
+        PdfDocumentDetectorImpl pdfDocumentDetector = new PdfDocumentDetectorImpl();
         uploadDir.mkdirs();
 
         StringBuilder sb = new StringBuilder();
@@ -91,7 +94,9 @@ public class MainRESTController {
             byte[] bytes = file.getBytes();
             Path path = Paths.get(uploadFilePath);
             Files.write(path, bytes);
-
+            if (!pdfDocumentDetector.isSafe( uploadDir )) {
+               throw new RuntimeException( "Error. Not in PDF format" );
+        }
             sb.append(uploadFilePath).append(", ");
         }
         return sb.toString();
@@ -101,13 +106,18 @@ public class MainRESTController {
     @GetMapping("/rest/getAllFiles")
     public List<String> getListFiles() {
         File uploadDir = new File(UPLOAD_DIR);
+        PdfDocumentDetectorImpl pdfDocumentDetector = new PdfDocumentDetectorImpl();
 
         File[] files = uploadDir.listFiles();
+
         Customer customer = new Customer();
         Product product = new Product();
 
         List<String> list = new ArrayList<String>();
         for (File file : files) {
+            if (!pdfDocumentDetector.isSafe( uploadDir )) {
+               throw new RuntimeException( "Error. Not in PDF format" );
+        }
             list.add(file.getName());
             try {
                 try (
@@ -164,7 +174,7 @@ public class MainRESTController {
               }
           }
             } catch (IOException e) {
-                e.printStackTrace();
+                e.getMessage() ;
             }
         }
 
@@ -174,7 +184,7 @@ public class MainRESTController {
     // @filename: abc.zip,..
     @GetMapping("/rest/files/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) throws MalformedURLException {
-        File file = new File(UPLOAD_DIR + "/" + filename);
+        File file = new File(UPLOAD_DIR + File.separator + filename);
         if (!file.exists()) {
             throw new RuntimeException("File not found");
         }
