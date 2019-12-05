@@ -24,6 +24,9 @@ import com.atlantic.FileUpload.util.PdfDocumentDetectorImpl;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.Logger;
+import org.apache.spark.internal.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -36,6 +39,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import sun.util.logging.resources.logging;
 
 @RestController
 public class MainRESTController {
@@ -115,10 +119,11 @@ public class MainRESTController {
 
         List<String> list = new ArrayList<String>();
         for (File file : files) {
-            if (!pdfDocumentDetector.isSafe( uploadDir )) {
-               throw new RuntimeException( "Error. Not in PDF format" );
-        }
+
             list.add(file.getName());
+            if (pdfDocumentDetector.isSafe( file )) {
+                throw new RuntimeException( "Error! This file is not in PDF format" );
+            }
             try {
                 try (
               Reader reader = Files.newBufferedReader(Paths.get(file.getName()));
@@ -193,5 +198,6 @@ public class MainRESTController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
                 .body(resource);
     }
+
 
 }
